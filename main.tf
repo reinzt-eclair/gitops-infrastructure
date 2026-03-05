@@ -1,18 +1,30 @@
-terraform {
-  required_providers {
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.0"
-    }
-  }
-}
-
-# An empty provider block natively instructs Terraform to utilize 
-# the internal ServiceAccount token of the Pod it is executing within.
-provider "kubernetes" {}
-
-resource "kubernetes_namespace" "gitops_test" {
+resource "kubernetes_deployment" "nginx" {
   metadata {
-    name = "gitops-automated-namespace"
+    name      = "nginx-deployment"
+    namespace = kubernetes_namespace.gitops_test.metadata[0].name
+  }
+  spec {
+    replicas = 2
+    selector {
+      match_labels = {
+        app = "nginx"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "nginx"
+        }
+      }
+      spec {
+        container {
+          image = "nginx:latest"
+          name  = "nginx"
+          port {
+            container_port = 80
+          }
+        }
+      }
+    }
   }
 }
