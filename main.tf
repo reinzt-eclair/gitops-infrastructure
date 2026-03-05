@@ -1,3 +1,23 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+  }
+}
+
+# Internal Authentication Binding
+provider "kubernetes" {}
+
+# State Object 1: The Namespace
+resource "kubernetes_namespace" "gitops_test" {
+  metadata {
+    name = "gitops-automated-namespace"
+  }
+}
+
+# State Object 2: The Web Server Deployment
 resource "kubernetes_deployment" "nginx" {
   metadata {
     name      = "nginx-deployment"
